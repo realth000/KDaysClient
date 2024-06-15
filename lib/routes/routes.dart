@@ -17,7 +17,7 @@ final router = GoRouter(
       branches: [
         StatefulShellBranch(
           routes: [
-            _AppRoute(
+            AppRoute(
               path: ScreenPaths.home,
               builder: (_) => const HomePage(),
             ),
@@ -25,7 +25,7 @@ final router = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            _AppRoute(
+            AppRoute(
               path: ScreenPaths.my,
               builder: (_) => const MyPage(),
             ),
@@ -37,8 +37,9 @@ final router = GoRouter(
 );
 
 /// 包一层路由的定义
-class _AppRoute extends GoRoute {
-  _AppRoute({
+class AppRoute extends GoRoute {
+  /// Constructor.
+  AppRoute({
     required super.path,
     required Widget Function(GoRouterState s) builder,
     List<GoRoute> routes = const [],

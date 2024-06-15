@@ -2,15 +2,32 @@
 
 Client for KDays
 
-## Getting Started
+## 编译
 
-This project is a starting point for a Flutter application.
+配置[flutter](https://flutter.cn/)环境。
 
-A few resources to get you started if this is your first Flutter project:
+```shell
+# 1. 代码生成
+dart run build_runner build
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+# 2. 编译
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 安卓
+flutter build apk
+
+## iOS
+flutter build ios --no-codesign
+
+## Linux
+flutter build linux
+
+## MacOS
+flutter build macos
+
+## Web
+flutter build web
+
+## Windows
+flutter build windows
+```
+
