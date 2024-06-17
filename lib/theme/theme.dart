@@ -14,6 +14,7 @@ final class AppTheme {
       seedScheme = ColorScheme.fromSeed(seedColor: seedColor);
     }
     return FlexThemeData.light(
+      fontFamily: 'Microsoft YaHei UI',
       primary: seedScheme?.primary,
       onPrimary: seedScheme?.onPrimary,
       primaryContainer: seedScheme?.primaryContainer,
@@ -58,6 +59,7 @@ final class AppTheme {
     }
 
     return FlexThemeData.dark(
+      fontFamily: 'Microsoft YaHei UI',
       primary: seedScheme?.primary,
       onPrimary: seedScheme?.onPrimary,
       primaryContainer: seedScheme?.primaryContainer,
