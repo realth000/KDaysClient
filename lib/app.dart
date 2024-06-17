@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kdays_client/constants/env.dart';
+import 'package:kdays_client/features/auth/bloc/auth_bloc.dart';
+import 'package:kdays_client/features/auth/repository/auth_repository.dart';
 import 'package:kdays_client/routes/routes.dart';
+import 'package:kdays_client/shared/providers/api_provider.dart';
+import 'package:kdays_client/shared/providers/net_client_provider.dart';
 import 'package:kdays_client/theme/theme.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -23,7 +29,26 @@ class App extends StatelessWidget {
         const Breakpoint(start: 451, end: 800, name: TABLET),
         const Breakpoint(start: 801, end: 1920, name: DESKTOP),
       ],
-      child: app,
+      child: MultiBlocProvider(
+        providers: [
+          RepositoryProvider(
+            create: (_) => NetClientProvider(),
+          ),
+          RepositoryProvider(
+            create: (_) => ApiProvider(
+              userCenterUrl: Env.userCenterUrl,
+              forumUrl: Env.forumApiSecret,
+            ),
+          ),
+          RepositoryProvider(
+            create: (_) => AuthRepository(),
+          ),
+          BlocProvider(
+            create: (context) => AuthBloc(RepositoryProvider.of(context)),
+          ),
+        ],
+        child: app,
+      ),
     );
   }
 }
