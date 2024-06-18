@@ -8,6 +8,10 @@ import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/shared/models/credential.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/exception.dart';
 
+extension _DateTimeExt on DateTime {
+  int get secondsSinceEpoch => (millisecondsSinceEpoch / 1000).round();
+}
+
 /// 网络请求头中需要包含的字段
 final class _HeaderKeys {
   _HeaderKeys._();
@@ -49,7 +53,7 @@ final class NetClient {
     String api,
     Map<String, dynamic> data,
   ) async {
-    final timeStamp = DateTime.now().microsecondsSinceEpoch;
+    final timeStamp = DateTime.now().secondsSinceEpoch;
     try {
       final resp = await _dio.postUri<dynamic>(
         Uri.https(_userCenter.url, api),
@@ -83,7 +87,7 @@ final class NetClient {
     String api,
     Map<String, dynamic> data,
   ) async {
-    final timeStamp = DateTime.now().microsecondsSinceEpoch;
+    final timeStamp = DateTime.now().secondsSinceEpoch;
     try {
       final resp = await _dio.postUri<dynamic>(
         Uri.https(_forum.url, api),
