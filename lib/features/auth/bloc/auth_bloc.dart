@@ -52,7 +52,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     switch (authResult) {
       case Left(value: final e):
-        talker.handle(e);
         emit(AuthState.failed(e: e));
       case Right(value: final accessToken):
         // 用户中心认证通过，接下来认证论坛

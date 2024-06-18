@@ -31,6 +31,6 @@ sealed class AuthException with _$AuthException {
   /// 其他类型的错误
   const factory AuthException.unknown({
     required int code,
-    required String message,
+    required String? message,
   }) = _Unknown;
 }

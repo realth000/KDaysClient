@@ -4,6 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:kdays_client/constants/api/user_center.dart';
 import 'package:kdays_client/features/auth/exception/exception.dart';
 import 'package:kdays_client/instance.dart';
+import 'package:kdays_client/shared/models/server_resp.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/net_client.dart';
 
 /// 用于认证的repository
@@ -43,7 +44,16 @@ final class AuthRepository {
           ),
         );
       case Right(value: final v):
-        talker.debug('loginUserCenter get data: ${v.data}');
+        final resp = ServerResp.fromJson(v.data as Map<String, dynamic>);
+        talker.debug('loginUserCenter got resp: $resp');
+        if (!resp.ok) {
+          return Left(
+            AuthException.unknown(
+              code: resp.code,
+              message: resp.msg,
+            ),
+          );
+        }
         return Right('${v.data}');
     }
   }
