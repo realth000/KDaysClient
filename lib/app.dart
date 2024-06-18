@@ -4,8 +4,8 @@ import 'package:kdays_client/constants/env.dart';
 import 'package:kdays_client/features/auth/bloc/auth_bloc.dart';
 import 'package:kdays_client/features/auth/repository/auth_repository.dart';
 import 'package:kdays_client/routes/routes.dart';
-import 'package:kdays_client/shared/providers/api_provider.dart';
-import 'package:kdays_client/shared/providers/net_client_provider.dart';
+import 'package:kdays_client/shared/models/credential.dart';
+import 'package:kdays_client/shared/providers/net_client_provider/net_client_provider.dart';
 import 'package:kdays_client/theme/theme.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -29,22 +29,32 @@ class App extends StatelessWidget {
         const Breakpoint(start: 451, end: 800, name: TABLET),
         const Breakpoint(start: 801, end: 1920, name: DESKTOP),
       ],
-      child: MultiBlocProvider(
+      child: MultiRepositoryProvider(
         providers: [
-          RepositoryProvider(
-            create: (_) => NetClientProvider(),
-          ),
-          RepositoryProvider(
-            create: (_) => ApiProvider(
-              userCenterUrl: Env.userCenterUrl,
-              forumUrl: Env.forumApiSecret,
+          RepositoryProvider<NetClientProvider>(
+            create: (_) => NetClientProvider(
+              userCenterCredential: const Credential(
+                url: Env.userCenterUrl,
+                apiKey: Env.userCenterApiKey,
+                apiSecret: Env.userCenterApiSecret,
+                accessToken: null,
+              ),
+              forumCredential: const Credential(
+                url: Env.forumUrl,
+                apiKey: Env.forumApiKey,
+                apiSecret: Env.forumApiSecret,
+                accessToken: null,
+              ),
             ),
           ),
-          RepositoryProvider(
-            create: (_) => AuthRepository(),
+          RepositoryProvider<AuthRepository>(
+            create: (context) => AuthRepository(
+              RepositoryProvider.of<NetClientProvider>(context).getClient(),
+            ),
           ),
           BlocProvider(
-            create: (context) => AuthBloc(RepositoryProvider.of(context)),
+            create: (context) =>
+                AuthBloc(RepositoryProvider.of<AuthRepository>(context)),
           ),
         ],
         child: app,

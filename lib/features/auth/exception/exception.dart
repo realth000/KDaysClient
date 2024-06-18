@@ -20,6 +20,12 @@ sealed class AuthException with _$AuthException {
   /// 指用户账户尚未创建
   const factory AuthException.accountNotCreated() = _AccountNotCreated;
 
+  /// 网络错误
+  const factory AuthException.networkError({
+    required int? code,
+    required String? message,
+  }) = _NetworkError;
+
   /// 未知错误
   ///
   /// 其他类型的错误
