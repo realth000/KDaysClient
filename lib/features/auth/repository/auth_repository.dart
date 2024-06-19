@@ -7,6 +7,12 @@ import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/shared/models/server_resp.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/net_client.dart';
 
+abstract class _AuthCode {
+  static const accountNotCreated = -2;
+  static const accountOrPasswordError = -4;
+  static const appNotAuthed = -7;
+}
+
 /// 用于认证的repository
 ///
 /// 提供用户认证相关的能力
@@ -47,12 +53,15 @@ final class AuthRepository {
         final resp = ServerResp.fromJson(v.data as Map<String, dynamic>);
         talker.debug('loginUserCenter got resp: $resp');
         if (!resp.ok) {
-          return Left(
-            AuthException.unknown(
-              code: resp.code,
-              message: resp.msg,
-            ),
-          );
+          final err = switch (resp.code) {
+            _AuthCode.accountNotCreated =>
+              const AuthException.accountNotCreated(),
+            _AuthCode.accountOrPasswordError =>
+              const AuthException.accountOrPasswordError(),
+            _AuthCode.appNotAuthed => const AuthException.appNotAuthed(),
+            final v => AuthException.unknown(code: v, message: resp.msg),
+          };
+          return Left(err);
         }
         return Right('${v.data}');
     }

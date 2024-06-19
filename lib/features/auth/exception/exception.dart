@@ -20,6 +20,9 @@ sealed class AuthException with _$AuthException {
   /// 指用户账户尚未创建
   const factory AuthException.accountNotCreated() = _AccountNotCreated;
 
+  /// 用户不存在或密码错误
+  const factory AuthException.accountOrPasswordError() = _AccoutOrPasswordError;
+
   /// 网络错误
   const factory AuthException.networkError({
     required int? code,
@@ -33,4 +36,17 @@ sealed class AuthException with _$AuthException {
     required int code,
     required String? message,
   }) = _Unknown;
+}
+
+/// 扩展方法
+extension AuthExceptionExt on AuthException {
+  /// 获取message
+  String get message => switch (this) {
+        _AppNotAuthed() => '应用未授权',
+        _AvatarNotSet() => '用户未设置头像',
+        _AccountNotCreated() => '用户不存在',
+        _AccoutOrPasswordError() => '用户不存在或密码错误',
+        _NetworkError(:final code) => '网络错误（$code）',
+        _Unknown(:final message) => '其他错误($message)',
+      };
 }

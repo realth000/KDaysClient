@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdays_client/constants/layout.dart';
 import 'package:kdays_client/features/auth/bloc/auth_bloc.dart';
+import 'package:kdays_client/features/auth/exception/exception.dart';
 import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/utils/show_snack_bar.dart';
 
@@ -103,7 +104,7 @@ class _HomePageState extends State<HomePage> {
         switch (state) {
           case AuthStateFailed(:final e):
             talker.handle(e);
-            showSnackBar(context, '登录失败');
+            showSnackBar(context, '登录失败: ${e.message}');
           default:
             talker.debug('HomePage update AuthBloc state to $state');
         }
