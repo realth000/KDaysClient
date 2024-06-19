@@ -3,7 +3,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:kdays_client/features/auth/exception/exception.dart';
 import 'package:kdays_client/features/auth/repository/auth_repository.dart';
-import 'package:kdays_client/instance.dart';
 
 part 'auth_bloc.freezed.dart';
 part 'auth_event.dart';
@@ -52,6 +51,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     switch (authResult) {
       case Left(value: final e):
+        // TODO: 处理未设置头像
+        // TODO: 处理应用未授权
         emit(AuthState.failed(e: e));
       case Right(value: final accessToken):
         // 用户中心认证通过，接下来认证论坛
@@ -74,14 +75,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await _repo.loginForum(accessToken: userCenterAccessToken);
     switch (authResult) {
       case Left(value: final e):
-        talker.handle(e);
         emit(AuthState.failed(e: e));
       case Right(value: final forumAccessToken):
         emit(
           AuthState.authed(
             input: input,
-            userCenterAccessToken: userCenterAccessToken,
-            forumAccessToken: forumAccessToken,
+            userCenterToken: userCenterAccessToken,
+            forumToken: forumAccessToken.token,
           ),
         );
     }

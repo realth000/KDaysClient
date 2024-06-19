@@ -6,6 +6,8 @@ include:
 analyzer:
   errors:
     depend_on_referenced_packages: error
+    # For freezed annotation used in factory constructor.
+    invalid_annotation_target: ignore
   exclude:
     - lib/**.g.dart
     - lib/**.freezed.dart

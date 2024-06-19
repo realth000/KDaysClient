@@ -18,19 +18,18 @@ sealed class ServerResp with _$ServerResp {
     required int code,
 
     /// 错误信息
-    required String? msg,
+    @JsonKey(name: 'msg') required String? message,
 
     /// 正确的相应内容
     required dynamic data,
   }) = _ServerResp;
 
+  const ServerResp._();
+
   /// Deserialize
   factory ServerResp.fromJson(Map<String, dynamic> json) =>
       _$ServerRespFromJson(json);
-}
 
-/// 加一些扩展方法
-extension ServerRespExt on ServerResp {
   /// 是否正常
   bool get ok => code == ServerRespCode.ok;
 }

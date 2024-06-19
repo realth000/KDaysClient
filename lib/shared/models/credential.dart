@@ -19,10 +19,9 @@ sealed class Credential with _$Credential {
     /// token，可为空
     required String? accessToken,
   }) = _Credential;
-}
 
-/// 扩展，加几个函数
-extension CredentialExt on Credential {
-  /// 检查是否有token
+  const Credential._();
+
+  /// 检查是否含有token
   bool get hasToken => accessToken != null;
 }

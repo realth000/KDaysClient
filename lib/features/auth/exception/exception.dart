@@ -5,6 +5,8 @@ part 'exception.freezed.dart';
 /// 认证过程中可能发生的异常
 @freezed
 sealed class AuthException with _$AuthException {
+  const AuthException._();
+
   /// 应用未授权
   ///
   /// 指用户尚未给本应用授予登录权限
@@ -36,12 +38,11 @@ sealed class AuthException with _$AuthException {
     required int code,
     required String? message,
   }) = _Unknown;
-}
 
-/// 扩展方法
-extension AuthExceptionExt on AuthException {
   /// 获取message
-  String get message => switch (this) {
+  ///
+  /// 这里实际上不会返回null，但是不可空的话freezed生成的代码编译不过
+  String? get message => switch (this) {
         _AppNotAuthed() => '应用未授权',
         _AvatarNotSet() => '用户未设置头像',
         _AccountNotCreated() => '用户不存在',

@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:kdays_client/shared/providers/storage_provider/connection/native.dart';
-import 'package:kdays_client/shared/providers/storage_provider/schema/schema.dart';
+import 'package:kdays_client/features/storage/database/connection/native.dart';
+import 'package:kdays_client/features/storage/database/schema/schema.dart';
 
 part 'database.g.dart';
 

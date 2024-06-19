@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kdays_client/constants/env.dart';
 import 'package:kdays_client/features/auth/bloc/auth_bloc.dart';
 import 'package:kdays_client/features/auth/repository/auth_repository.dart';
+import 'package:kdays_client/features/storage/bloc/storage_bloc.dart';
+import 'package:kdays_client/features/storage/database/database.dart';
+import 'package:kdays_client/features/storage/repository/storage_repository.dart';
 import 'package:kdays_client/routes/routes.dart';
 import 'package:kdays_client/shared/models/credential.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/net_client_provider.dart';
@@ -47,14 +50,25 @@ class App extends StatelessWidget {
               ),
             ),
           ),
+          RepositoryProvider(
+            create: (_) => AppDatabase(),
+          ),
           RepositoryProvider<AuthRepository>(
             create: (context) => AuthRepository(
               RepositoryProvider.of<NetClientProvider>(context).getClient(),
             ),
           ),
+          RepositoryProvider<StorageRepository>(
+            create: (context) => StorageRepository(
+              RepositoryProvider.of(context),
+            ),
+          ),
           BlocProvider(
             create: (context) =>
                 AuthBloc(RepositoryProvider.of<AuthRepository>(context)),
+          ),
+          BlocProvider(
+            create: (context) => StorageBloc(RepositoryProvider.of(context)),
           ),
         ],
         child: app,

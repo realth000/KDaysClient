@@ -44,9 +44,9 @@ sealed class AuthState with _$AuthState {
     required String input,
 
     /// 用户中心的认证凭据
-    required String userCenterAccessToken,
+    required String userCenterToken,
 
     /// 用户中心的认证凭据
-    required String forumAccessToken,
+    required String forumToken,
   }) = AuthStateAuthed;
 }

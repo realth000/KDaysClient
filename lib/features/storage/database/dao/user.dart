@@ -18,8 +18,13 @@ final class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
   }
 
   /// 插入用户数据
+  ///
+  /// 冲突时替换
   Future<int> insertUser(UserCompanion userCompanion) async {
-    return into(user).insert(userCompanion);
+    return into(user).insert(
+      userCompanion,
+      mode: InsertMode.insertOrReplace,
+    );
   }
 
   /// 更新用户数据
