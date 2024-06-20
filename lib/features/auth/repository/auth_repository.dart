@@ -8,6 +8,7 @@ import 'package:kdays_client/features/auth/exception/exception.dart';
 import 'package:kdays_client/features/auth/models/models.dart';
 import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/shared/models/server_resp.dart';
+import 'package:kdays_client/shared/models/user.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/net_client.dart';
 
 abstract class _AuthCode {
@@ -134,6 +135,33 @@ final class AuthRepository {
 
   /// 用户退出登录
   Future<void> logout() async {
-    //
+    throw UnimplementedError();
+  }
+
+  /// 获取当前用户信息
+  Future<UserModel?> fetchUserInfo() async {
+    final userInfoResult = await _netClient.getForum(ForumApi.myInfo);
+    switch (userInfoResult) {
+      case Left(value: final e):
+        talker.handle(e);
+        return null;
+      case Right(value: final resp):
+        return UserModel.fromJson(resp.data as Map<String, dynamic>);
+    }
+    // if (userInfoResult case Right(value: final resp)) {
+    //   final userInfo = UserModel.fromJson(resp.data as Map<String, dynamic>);
+    //   return userInfo;
+    // }
+    // return null;
+  }
+
+  /// 检查认证凭据是否有效
+  Future<(String, String, String)?> validateCredential() async {
+    if (await fetchUserInfo() == null) {
+      return null;
+    }
+    // 正常登录时，这三个值都非空
+    final (input, userCenterToken, forumToken) = _netClient.getUserInfo();
+    return (input!, userCenterToken!, forumToken!);
   }
 }

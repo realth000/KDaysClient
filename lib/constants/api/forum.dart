@@ -4,4 +4,10 @@ final class ForumApi {
 
   /// 登录
   static const String login = 'api/plugin/call';
+
+  /// 当前用户信息 *GET*
+  static const String myInfo = 'api/my/info';
+
+  /// 当前用户资料 *GET*
+  static const String myProfile = 'api/my/profile';
 }

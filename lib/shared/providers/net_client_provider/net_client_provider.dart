@@ -51,8 +51,9 @@ final class NetClientProvider {
       _forum = _forum.copyWith(accessToken: accessToken);
 
   /// 生成一个最新的http client
-  NetClient getClient() => NetClient(
+  NetClient getClient({String? input}) => NetClient(
         dio: Dio(),
+        input: input,
         userCenterCredential: _userCenter,
         forumCredential: _forum,
       );

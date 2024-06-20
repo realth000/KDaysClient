@@ -1,4 +1,6 @@
 import 'package:drift/drift.dart';
+import 'package:kdays_client/features/settings/models/settings_keys.dart';
+import 'package:kdays_client/features/settings/models/settings_map.dart';
 import 'package:kdays_client/features/storage/database/dao/dao.dart';
 import 'package:kdays_client/features/storage/database/database.dart';
 import 'package:kdays_client/instance.dart';
@@ -31,8 +33,34 @@ final class StorageRepository {
     });
   }
 
+  Future<void> loadUserCredential() async {
+    return UserDao(_db).selectUserById(1);
+  }
+
   /// Destructor.
   Future<void> dispose() async {
     await _db.close();
+  }
+
+  /// 获取类型为[T]的设置项
+  Future<T?> loadSettings<T>(String key) async {
+    return SettingsDao(_db).getValue<T>(key);
+  }
+
+  /// 保存类型为[T]的设置项
+  Future<void> saveSettings<T>(String key, T value) async {
+    await _db.transaction(() async {
+      talker.debug('saveSettings: key=$key, value=$value, type=$T');
+      await SettingsDao(_db).setValue<T>(key, value);
+    });
+  }
+
+  /// 加载所有配置项
+  Future<SettingsMap> loadAllSettings() async {
+    final dao = SettingsDao(_db);
+    return SettingsMap(
+      currentUser: dao.getValue<String>(SettingsKeys.currentUser) as String? ??
+          SettingsDefaultValue.currentUser,
+    );
   }
 }

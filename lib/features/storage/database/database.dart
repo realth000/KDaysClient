@@ -8,6 +8,7 @@ part 'database.g.dart';
 @DriftDatabase(
   tables: [
     User,
+    Settings,
   ],
 )
 final class AppDatabase extends _$AppDatabase {

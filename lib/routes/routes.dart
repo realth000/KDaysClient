@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kdays_client/features/auth/view/login_page.dart';
 import 'package:kdays_client/features/home/view/home_page.dart';
 import 'package:kdays_client/features/my/view/my_page.dart';
 import 'package:kdays_client/features/root/view/root_page.dart';
@@ -10,7 +11,7 @@ final _rootRouteKey = GlobalKey<NavigatorState>();
 /// 路由定义实例，整个应用的路由页面都定义在这里。
 final router = GoRouter(
   navigatorKey: _rootRouteKey,
-  initialLocation: ScreenPaths.home,
+  initialLocation: ScreenPaths.login,
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, router, navigator) => RootPage(navigator),
@@ -32,6 +33,10 @@ final router = GoRouter(
           ],
         ),
       ],
+    ),
+    AppRoute(
+      path: ScreenPaths.login,
+      builder: (_) => const LoginPage(),
     ),
   ],
 );

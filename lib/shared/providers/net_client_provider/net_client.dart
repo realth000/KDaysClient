@@ -34,13 +34,17 @@ final class NetClient {
   /// Constructor.
   NetClient({
     required Dio dio,
+    required String? input,
     required Credential userCenterCredential,
     required Credential forumCredential,
   })  : _dio = dio,
         _userCenter = userCenterCredential,
-        _forum = forumCredential;
+        _forum = forumCredential,
+        _input = input;
 
   final Dio _dio;
+
+  final String? _input;
 
   /// 用于用户中心的凭据
   Credential _userCenter;
@@ -53,6 +57,15 @@ final class NetClient {
   /// 仅仅在token发生变化时使用
   void setUserCenterToken(String accessToken) =>
       _userCenter = _userCenter.copyWith(accessToken: accessToken);
+
+  /// 获取用户token
+  ///
+  /// 返回 (用户名或邮箱, 用户中心token, 论坛token)
+  (String?, String?, String?) getUserInfo() => (
+        _input,
+        _userCenter.accessToken,
+        _forum.accessToken,
+      );
 
   /// 向用户中心发送post请求
   Future<Either<NetworkException, Response<dynamic>>> postUserCenter(
@@ -75,6 +88,37 @@ final class NetClient {
             _HeaderKeys.signTime: timeStamp,
             if (_userCenter.hasToken)
               _HeaderKeys.token: _userCenter.accessToken,
+          },
+        ),
+      );
+      if (resp.statusCode != HttpStatus.ok) {
+        return Left(NetworkException(code: resp.statusCode, message: null));
+      }
+      return Right(resp);
+    } on DioException catch (e, st) {
+      talker.handle(e, st);
+      return Left(NetworkException(code: null, message: e.message));
+    }
+  }
+
+  /// 论坛get请求
+  Future<Either<NetworkException, Response<dynamic>>> getForum(
+    String api,
+  ) async {
+    final timeStamp = DateTime.now().secondsSinceEpoch;
+    try {
+      final resp = await _dio.getUri<dynamic>(
+        Uri.https(_forum.url, api),
+        options: Options(
+          headers: {
+            _HeaderKeys.apiKey: _forum.apiKey,
+            _HeaderKeys.sign: _signApi(
+              secret: _forum.apiSecret,
+              data: '',
+              timeStamp: timeStamp,
+            ),
+            _HeaderKeys.signTime: timeStamp,
+            if (_forum.hasToken) _HeaderKeys.token: _forum.accessToken,
           },
         ),
       );

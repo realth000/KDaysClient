@@ -3,6 +3,9 @@ part of 'auth_bloc.dart';
 /// 用户认证相关的事件
 @freezed
 sealed class AuthEvent with _$AuthEvent {
+  /// 检查登录状态
+  const factory AuthEvent.checkLogin({required String input}) = _CheckLogin;
+
   /// 登录用户中心
   ///
   /// 使用用户名或邮箱[input]及密码[password]登录

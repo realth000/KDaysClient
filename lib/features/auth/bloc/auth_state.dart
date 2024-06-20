@@ -4,7 +4,7 @@ part of 'auth_bloc.dart';
 @freezed
 sealed class AuthState with _$AuthState {
   /// 初始状态，未认证
-  const factory AuthState.initial() = _Initial;
+  const factory AuthState.initial() = AuthStateInitial;
 
   /// 正在获取用户中心的认证
   ///

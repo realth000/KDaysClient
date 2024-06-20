@@ -16,6 +16,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._repo) : super(const AuthState.initial()) {
     on<AuthEvent>((event, emit) async {
       switch (event) {
+        case _CheckLogin(:final input):
+          await _onCheckLogin(emit, input: input);
         case _LoginUserCenter(:final input, :final password):
           await _onLoginUserCenter(
             emit,
@@ -84,6 +86,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             forumToken: forumAccessToken.token,
           ),
         );
+    }
+  }
+
+  Future<void> _onCheckLogin(
+    _Emit emit, {
+    required String input,
+  }) async {
+    final userInfo = await _repo.validateCredential();
+    if (userInfo == null) {
+      emit(const AuthStateInitial());
+    } else {
+      emit(
+        AuthStateAuthed(
+          input: userInfo.$1,
+          userCenterToken: userInfo.$2,
+          forumToken: userInfo.$3,
+        ),
+      );
     }
   }
 }
