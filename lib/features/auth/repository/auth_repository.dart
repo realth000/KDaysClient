@@ -80,7 +80,15 @@ final class AuthRepository {
         if (!resp.ok) {
           return Left(resp.toException());
         }
-        return Right('${v.data}');
+
+        final userCenterToken =
+            (resp.data as Map<String, dynamic>?)?['access_token'] as String?;
+        if (userCenterToken == null) {
+          talker.error('user center token not found in response');
+          return const Left(AuthException.tokenNotFound());
+        }
+        _netClient.setUserCenterToken(userCenterToken);
+        return Right(userCenterToken);
     }
   }
 
@@ -99,7 +107,7 @@ final class AuthRepository {
         _AuthKeys.pName: _AuthKeys.pNameValue,
         _AuthKeys.doo: _AuthKeys.dooValue,
         // TODO: 不要写死API key
-        _AuthKeys.apiKey: Env.forumApiKey,
+        _AuthKeys.apiKey: Env.userCenterApiKey,
         _AuthKeys.token: accessToken,
       },
     );
@@ -119,7 +127,7 @@ final class AuthRepository {
           return Left(resp.toException());
         }
         return Right(
-          ForumAuthPassedModel.fromJson(v.data as Map<String, dynamic>),
+          ForumAuthPassedModel.fromJson(resp.data as Map<String, dynamic>),
         );
     }
   }

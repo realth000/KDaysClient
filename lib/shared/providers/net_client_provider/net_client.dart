@@ -32,7 +32,7 @@ final class _HeaderKeys {
 /// 网络请求的client，封装了一层dio，负责附加各类参数及处理问题
 final class NetClient {
   /// Constructor.
-  const NetClient({
+  NetClient({
     required Dio dio,
     required Credential userCenterCredential,
     required Credential forumCredential,
@@ -43,10 +43,16 @@ final class NetClient {
   final Dio _dio;
 
   /// 用于用户中心的凭据
-  final Credential _userCenter;
+  Credential _userCenter;
 
   /// 用于论坛的凭据
   final Credential _forum;
+
+  /// 设置用户中心的token
+  ///
+  /// 仅仅在token发生变化时使用
+  void setUserCenterToken(String accessToken) =>
+      _userCenter = _userCenter.copyWith(accessToken: accessToken);
 
   /// 向用户中心发送post请求
   Future<Either<NetworkException, Response<dynamic>>> postUserCenter(

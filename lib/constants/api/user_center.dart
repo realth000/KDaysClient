@@ -6,5 +6,5 @@ final class UserCenterApi {
   static const String login = 'api/login/account';
 
   /// 查看用户信息
-  static const String userInfo = 'api/usr/info';
+  static const String userInfo = 'api/user/info';
 }

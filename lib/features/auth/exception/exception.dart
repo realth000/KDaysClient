@@ -31,6 +31,9 @@ sealed class AuthException with _$AuthException {
     required String? message,
   }) = _NetworkError;
 
+  /// 请求中未找到token
+  const factory AuthException.tokenNotFound() = _TokenNotFound;
+
   /// 未知错误
   ///
   /// 其他类型的错误
@@ -48,6 +51,7 @@ sealed class AuthException with _$AuthException {
         _AccountNotCreated() => '用户不存在',
         _AccoutOrPasswordError() => '用户不存在或密码错误',
         _NetworkError(:final code) => '网络错误（$code）',
+        _TokenNotFound() => '响应中未找到用户凭据',
         _Unknown(:final message) => '其他错误($message)',
       };
 }
