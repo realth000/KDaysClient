@@ -5,7 +5,8 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:kdays_client/instance.dart';
-import 'package:kdays_client/shared/models/credential.dart';
+import 'package:kdays_client/shared/models/app_credential.dart';
+import 'package:kdays_client/shared/models/user_credential.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/exception.dart';
 
 extension _DateTimeExt on DateTime {
@@ -30,42 +31,29 @@ final class _HeaderKeys {
 }
 
 /// 网络请求的client，封装了一层dio，负责附加各类参数及处理问题
+///
+/// 为保证使用的凭据是最新的，每个网络请求都应单独构建一个最新的[NetClient]
 final class NetClient {
   /// Constructor.
-  NetClient({
+  const NetClient({
     required Dio dio,
-    required String? input,
-    required Credential userCenterCredential,
-    required Credential forumCredential,
+    required UserCredential? userCredential,
+    required AppCredential userCenterCredential,
+    required AppCredential forumCredential,
   })  : _dio = dio,
         _userCenter = userCenterCredential,
         _forum = forumCredential,
-        _input = input;
+        _userCredential = userCredential;
 
   final Dio _dio;
 
-  final String? _input;
-
   /// 用于用户中心的凭据
-  Credential _userCenter;
+  final AppCredential _userCenter;
 
   /// 用于论坛的凭据
-  final Credential _forum;
+  final AppCredential _forum;
 
-  /// 设置用户中心的token
-  ///
-  /// 仅仅在token发生变化时使用
-  void setUserCenterToken(String accessToken) =>
-      _userCenter = _userCenter.copyWith(accessToken: accessToken);
-
-  /// 获取用户token
-  ///
-  /// 返回 (用户名或邮箱, 用户中心token, 论坛token)
-  (String?, String?, String?) getUserInfo() => (
-        _input,
-        _userCenter.accessToken,
-        _forum.accessToken,
-      );
+  final UserCredential? _userCredential;
 
   /// 向用户中心发送post请求
   Future<Either<NetworkException, Response<dynamic>>> postUserCenter(
@@ -86,8 +74,8 @@ final class NetClient {
               timeStamp: timeStamp,
             ),
             _HeaderKeys.signTime: timeStamp,
-            if (_userCenter.hasToken)
-              _HeaderKeys.token: _userCenter.accessToken,
+            if (_userCredential != null)
+              _HeaderKeys.token: _userCredential.userCenterToken,
           },
         ),
       );
@@ -118,7 +106,8 @@ final class NetClient {
               timeStamp: timeStamp,
             ),
             _HeaderKeys.signTime: timeStamp,
-            if (_forum.hasToken) _HeaderKeys.token: _forum.accessToken,
+            if (_userCredential != null)
+              _HeaderKeys.token: _userCredential.forumToken,
           },
         ),
       );
@@ -151,7 +140,8 @@ final class NetClient {
               timeStamp: timeStamp,
             ),
             _HeaderKeys.signTime: timeStamp,
-            if (_forum.hasToken) _HeaderKeys.token: _forum.accessToken,
+            if (_userCredential != null)
+              _HeaderKeys.token: _userCredential.forumToken,
           },
         ),
       );

@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdays_client/constants/layout.dart';
 import 'package:kdays_client/features/auth/bloc/auth_bloc.dart';
-import 'package:kdays_client/features/settings/cubit/settings_cubit.dart';
-import 'package:kdays_client/features/settings/models/settings_keys.dart';
+import 'package:kdays_client/features/settings/bloc/settings_bloc.dart';
 import 'package:kdays_client/features/storage/bloc/storage_bloc.dart';
 import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/routes/screen_paths.dart';
@@ -106,24 +105,21 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) async {
-        switch (state) {
-          case AuthStateInitial():
-            final user = await context
-                .read<SettingsCubit>()
-                .getValue<String>(SettingsKeys.currentUser);
-            if (user == null || !context.mounted) {
-              return;
-            }
-            // 有登录过的用户，检查用户登录情况
-            context.read<AuthBloc>().add(AuthEvent.checkLogin(input: user));
-          case AuthStateFailed(:final e):
+        state.when(
+          initial: () {
+            talker.debug('LoginPage check login');
+          },
+          processingUserCenter: (String input, String password) {
+            talker.debug('LoginPage update AuthBloc state to $state');
+          },
+          processingForum: (String input, String userCenterAccessToken) {
+            talker.debug('LoginPage update AuthBloc state to $state');
+          },
+          failed: (e) {
             talker.handle(e);
             showSnackBar(context, e.message!);
-          case AuthStateAuthed(
-              :final input,
-              :final userCenterToken,
-              :final forumToken,
-            ):
+          },
+          authed: (input, userCenterToken, forumToken) {
             // 更新全局凭据
             context.read<NetClientProvider>().setUserCenterToken(forumToken);
             context.read<NetClientProvider>().setForumToken(forumToken);
@@ -136,13 +132,21 @@ class _LoginPageState extends State<LoginPage> {
                     forumToken: forumToken,
                   ),
                 );
+            context
+                .read<SettingsBloc>()
+                .add(SettingsEvent.setCurrentUser(input: input));
             showSnackBar(context, '登录成功');
             context.pushReplacementNamed(ScreenPaths.home);
-          default:
-            talker.debug('HomePage update AuthBloc state to $state');
-        }
+          },
+          notAuthed: () {
+            talker.debug('LoginPage update AuthBloc state to $state');
+          },
+        );
       },
       builder: (context, state) {
+        if (state.isAuthed) {
+          context.pushReplacementNamed(ScreenPaths.settings);
+        }
         return Scaffold(
           body: Padding(
             padding: edgeInsetsL10T10R10B10,

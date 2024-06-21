@@ -18,5 +18,5 @@ class User extends Table {
   TextColumn get userCenterToken => text()();
 
   /// 论坛token
-  TextColumn get forumToken => text().nullable()();
+  TextColumn get forumToken => text()();
 }

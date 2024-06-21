@@ -5,7 +5,7 @@ part 'user.g.dart';
 
 /// 用户模型
 @freezed
-final class UserModel with _$UserModel {
+sealed class UserModel with _$UserModel {
   /// Constructor.
   const factory UserModel({
     /// UID

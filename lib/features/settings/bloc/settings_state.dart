@@ -1,10 +1,10 @@
-part of 'settings_cubit.dart';
+part of 'settings_bloc.dart';
 
-/// 设置项的状态
+/// 设置
 @freezed
 class SettingsState with _$SettingsState {
-  /// 状态值
+  /// 永远是加载完的状态
   const factory SettingsState.ok({
     required SettingsMap settingsMap,
-  }) = CurrentSettings;
+  }) = _Ok;
 }

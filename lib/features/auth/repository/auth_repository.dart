@@ -9,7 +9,8 @@ import 'package:kdays_client/features/auth/models/models.dart';
 import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/shared/models/server_resp.dart';
 import 'package:kdays_client/shared/models/user.dart';
-import 'package:kdays_client/shared/providers/net_client_provider/net_client.dart';
+import 'package:kdays_client/shared/models/user_credential.dart';
+import 'package:kdays_client/shared/providers/net_client_provider/net_client_provider.dart';
 
 abstract class _AuthCode {
   static const accountNotCreated = -2;
@@ -44,9 +45,9 @@ extension _ServerRespToExceptionExt on ServerResp {
 /// 提供用户认证相关的能力
 final class AuthRepository {
   /// 登录
-  AuthRepository(NetClient netClient) : _netClient = netClient;
+  AuthRepository(this._netClientProvider);
 
-  final NetClient _netClient;
+  final NetClientProvider _netClientProvider;
 
   /// 登录用户中心
   ///
@@ -63,7 +64,9 @@ final class AuthRepository {
     required String input,
     required String password,
   }) async {
-    final authResult = await _netClient.postUserCenter(UserCenterApi.login, {
+    final authResult = await _netClientProvider
+        .getClient()
+        .postUserCenter(UserCenterApi.login, {
       'input': input,
       'password': password,
     });
@@ -82,14 +85,14 @@ final class AuthRepository {
           return Left(resp.toException());
         }
 
-        final userCenterToken =
+        final userUserCenterToken =
             (resp.data as Map<String, dynamic>?)?['access_token'] as String?;
-        if (userCenterToken == null) {
+        if (userUserCenterToken == null) {
           talker.error('user center token not found in response');
           return const Left(AuthException.tokenNotFound());
         }
-        _netClient.setUserCenterToken(userCenterToken);
-        return Right(userCenterToken);
+        _netClientProvider.setUserCenterToken(userUserCenterToken);
+        return Right(userUserCenterToken);
     }
   }
 
@@ -102,7 +105,7 @@ final class AuthRepository {
   Future<Either<AuthException, ForumAuthPassedModel>> loginForum({
     required String accessToken,
   }) async {
-    final authResult = await _netClient.postForum(
+    final authResult = await _netClientProvider.getClient().postForum(
       ForumApi.login,
       {
         _AuthKeys.pName: _AuthKeys.pNameValue,
@@ -140,13 +143,16 @@ final class AuthRepository {
 
   /// 获取当前用户信息
   Future<UserModel?> fetchUserInfo() async {
-    final userInfoResult = await _netClient.getForum(ForumApi.myInfo);
+    final userInfoResult =
+        await _netClientProvider.getClient().getForum(ForumApi.myInfo);
     switch (userInfoResult) {
       case Left(value: final e):
         talker.handle(e);
         return null;
       case Right(value: final resp):
-        return UserModel.fromJson(resp.data as Map<String, dynamic>);
+        final serverResp =
+            ServerResp.fromJson(resp.data as Map<String, dynamic>);
+        return UserModel.fromJson(serverResp.data as Map<String, dynamic>);
     }
     // if (userInfoResult case Right(value: final resp)) {
     //   final userInfo = UserModel.fromJson(resp.data as Map<String, dynamic>);
@@ -156,12 +162,17 @@ final class AuthRepository {
   }
 
   /// 检查认证凭据是否有效
-  Future<(String, String, String)?> validateCredential() async {
-    if (await fetchUserInfo() == null) {
+  Future<UserCredential?> validateCredential() async {
+    if (_netClientProvider.userCredential == null) {
+      talker.debug('AuthRepo: validateCredential not '
+          'passed: credential is null');
       return null;
     }
-    // 正常登录时，这三个值都非空
-    final (input, userCenterToken, forumToken) = _netClient.getUserInfo();
-    return (input!, userCenterToken!, forumToken!);
+    if (await fetchUserInfo() == null) {
+      talker.debug('AuthRepo: validateCredential not '
+          'passed: failed to fetch user info');
+      return null;
+    }
+    return _netClientProvider.userCredential;
   }
 }

@@ -1,12 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'credential.freezed.dart';
+part 'app_credential.freezed.dart';
 
 /// 认证凭据，包含用于的url，固定的api及需要临时获取的认证凭据
 @freezed
-sealed class Credential with _$Credential {
+sealed class AppCredential with _$AppCredential {
   /// Constructor.
-  const factory Credential({
+  const factory AppCredential({
     /// 用于的网址
     required String url,
 
@@ -15,13 +15,7 @@ sealed class Credential with _$Credential {
 
     /// API secret
     required String apiSecret,
+  }) = _AppCredential;
 
-    /// token，可为空
-    required String? accessToken,
-  }) = _Credential;
-
-  const Credential._();
-
-  /// 检查是否含有token
-  bool get hasToken => accessToken != null;
+  const AppCredential._();
 }

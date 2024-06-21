@@ -7,6 +7,11 @@ final class SettingsDao extends DatabaseAccessor<AppDatabase>
   /// Constructor.
   SettingsDao(super.db);
 
+  /// 获取所有配置项
+  Future<List<SettingsEntity>> getAll() async {
+    return select(settings).get();
+  }
+
   /// 获取设置项
   ///
   /// [T] 可为:
@@ -20,11 +25,11 @@ final class SettingsDao extends DatabaseAccessor<AppDatabase>
     if (value == null) {
       return null;
     }
-    if (T is String) {
+    if (T == String) {
       return value.stringValue! as T;
-    } else if (T is int) {
+    } else if (T == int) {
       return value.intValue! as T;
-    } else if (T is bool) {
+    } else if (T == bool) {
       return value.boolValue! as T;
     }
     return null;
@@ -33,24 +38,24 @@ final class SettingsDao extends DatabaseAccessor<AppDatabase>
   /// 保存设置项
   Future<void> setValue<T>(String key, T value) async {
     final SettingsCompanion companion;
-    if (T is String) {
+    if (T == String) {
       companion = SettingsCompanion(
         name: Value(key),
         stringValue: Value(value as String),
       );
-    } else if (T is int) {
+    } else if (T == int) {
       companion = SettingsCompanion(
         name: Value(key),
         intValue: Value(value as int),
       );
-    } else if (T is bool) {
+    } else if (T == bool) {
       companion = SettingsCompanion(
         name: Value(key),
         boolValue: Value(value as bool),
       );
     } else {
       // 不支持的类型
-      talker.error('intend to save unsupported setting type: '
+      talker.error('SettingsDao intend to save unsupported setting type: '
           'key=$key, value=$value, type=$T');
       return;
     }

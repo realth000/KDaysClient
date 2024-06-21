@@ -4,7 +4,7 @@ part of 'auth_bloc.dart';
 @freezed
 sealed class AuthEvent with _$AuthEvent {
   /// 检查登录状态
-  const factory AuthEvent.checkLogin({required String input}) = _CheckLogin;
+  const factory AuthEvent.checkLogin() = _CheckLogin;
 
   /// 登录用户中心
   ///

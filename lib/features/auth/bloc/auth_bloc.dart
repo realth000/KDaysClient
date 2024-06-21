@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:kdays_client/features/auth/exception/exception.dart';
 import 'package:kdays_client/features/auth/repository/auth_repository.dart';
+import 'package:kdays_client/instance.dart';
 
 part 'auth_bloc.freezed.dart';
 part 'auth_event.dart';
@@ -16,8 +17,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._repo) : super(const AuthState.initial()) {
     on<AuthEvent>((event, emit) async {
       switch (event) {
-        case _CheckLogin(:final input):
-          await _onCheckLogin(emit, input: input);
+        case _CheckLogin():
+          await _onCheckLogin(emit);
         case _LoginUserCenter(:final input, :final password):
           await _onLoginUserCenter(
             emit,
@@ -89,19 +90,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onCheckLogin(
-    _Emit emit, {
-    required String input,
-  }) async {
-    final userInfo = await _repo.validateCredential();
-    if (userInfo == null) {
-      emit(const AuthStateInitial());
+  Future<void> _onCheckLogin(_Emit emit) async {
+    talker.debug('AuthBloc check login');
+    final userCredential = await _repo.validateCredential();
+    if (userCredential == null) {
+      emit(const AuthState.notAuthed());
+      talker.debug('AuthBloc check login, result: not authed');
     } else {
+      talker.debug('AuthBloc check login, result: authed');
       emit(
-        AuthStateAuthed(
-          input: userInfo.$1,
-          userCenterToken: userInfo.$2,
-          forumToken: userInfo.$3,
+        AuthState.authed(
+          input: userCredential.input,
+          userCenterToken: userCredential.userCenterToken,
+          forumToken: userCredential.forumToken,
         ),
       );
     }

@@ -4,7 +4,7 @@ part 'user_credential.freezed.dart';
 
 /// 用户认证凭据
 @freezed
-final class UserCredential with _$UserCredential {
+sealed class UserCredential with _$UserCredential {
   /// Constructor.
   const factory UserCredential({
     /// 用户名或邮箱
@@ -18,5 +18,7 @@ final class UserCredential with _$UserCredential {
 
     /// 论坛token
     required String forumToken,
-  }) = UserCredentialData;
+  }) = _UserCredential;
+
+  const UserCredential._();
 }

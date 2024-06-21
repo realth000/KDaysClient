@@ -1,23 +1,33 @@
 import 'package:dio/dio.dart';
-import 'package:kdays_client/shared/models/credential.dart';
+import 'package:kdays_client/shared/models/app_credential.dart';
+import 'package:kdays_client/shared/models/user_credential.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/net_client.dart';
 
 /// HTTP client的provider
 ///
 /// 使用这个可变的provider生成用于网络请求的http client，使得一些更改能够即时生效。
+///
+/// 作为[NetClient]的provider，需要作为全局唯一的获取[NetClient]的入口
 final class NetClientProvider {
   /// Constructor.
   NetClientProvider({
-    required Credential userCenterCredential,
-    required Credential forumCredential,
+    required AppCredential userCenterCredential,
+    required AppCredential forumCredential,
+    required UserCredential? userCredential,
   })  : _userCenter = userCenterCredential,
-        _forum = forumCredential;
+        _forum = forumCredential,
+        _userCredential = userCredential;
 
   /// 用于用户中心的凭据
-  Credential _userCenter;
+  AppCredential _userCenter;
 
   /// 用于论坛的凭据
-  Credential _forum;
+  AppCredential _forum;
+
+  /// 用户的认证凭据
+  ///
+  /// 只有用户登录成功后才不为空
+  UserCredential? _userCredential;
 
   /// 设置用户中心的url
   void setUserCenterUrl(String url) =>
@@ -43,17 +53,25 @@ final class NetClientProvider {
       _forum = _forum.copyWith(apiSecret: apiSecret);
 
   /// 设置用户中心的token
-  void setUserCenterToken(String accessToken) =>
-      _userCenter = _userCenter.copyWith(accessToken: accessToken);
+  void setUserCenterToken(String token) =>
+      _userCredential = _userCredential?.copyWith(userCenterToken: token);
 
   /// 设置论坛的token
-  void setForumToken(String accessToken) =>
-      _forum = _forum.copyWith(accessToken: accessToken);
+  void setForumToken(String token) =>
+      _userCredential = _userCredential?.copyWith(forumToken: token);
+
+  /// 获取当前持有的用户认证凭据
+  UserCredential? get userCredential => _userCredential;
 
   /// 生成一个最新的http client
-  NetClient getClient({String? input}) => NetClient(
+  ///
+  /// ## 参数
+  ///
+  /// * [userCredential] 用户的认证凭据，为空时采用Provider目前持有的凭据
+  NetClient getClient({UserCredential? userCredential}) => NetClient(
         dio: Dio(),
-        input: input,
+        // 使用用户的认证凭据代表用户操作
+        userCredential: userCredential ?? _userCredential,
         userCenterCredential: _userCenter,
         forumCredential: _forum,
       );

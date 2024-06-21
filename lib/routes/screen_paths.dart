@@ -1,5 +1,7 @@
 /// 路由定义
 final class ScreenPaths {
+  const ScreenPaths._();
+
   /// 根
   static const String root = '/';
 

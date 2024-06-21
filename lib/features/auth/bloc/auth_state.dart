@@ -15,7 +15,7 @@ sealed class AuthState with _$AuthState {
 
     /// 密码
     required String password,
-  }) = AuthStateProcessingUserCenter;
+  }) = _ProcessingUserCenter;
 
   /// 正在获取论坛的认证
   ///
@@ -26,7 +26,7 @@ sealed class AuthState with _$AuthState {
 
     /// 用户中心的认证凭据
     required String userCenterAccessToken,
-  }) = AuthStateProcessingForum;
+  }) = _ProcessingForum;
 
   /// 登录用户中心或者论坛失败
   ///
@@ -34,7 +34,7 @@ sealed class AuthState with _$AuthState {
   /// 允许用户重试登录
   const factory AuthState.failed({
     required AuthException e,
-  }) = AuthStateFailed;
+  }) = _Failed;
 
   /// 已认证
   ///
@@ -48,5 +48,13 @@ sealed class AuthState with _$AuthState {
 
     /// 用户中心的认证凭据
     required String forumToken,
-  }) = AuthStateAuthed;
+  }) = _Authed;
+
+  /// 没有登录
+  const factory AuthState.notAuthed() = _NotAuthed;
+
+  const AuthState._();
+
+  /// 是否认证通过
+  bool get isAuthed => this is _Authed;
 }
