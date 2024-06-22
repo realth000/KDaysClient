@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:kdays_client/features/auth/view/login_page.dart';
 import 'package:kdays_client/features/home/view/home_page.dart';
 import 'package:kdays_client/features/my/view/my_page.dart';
-import 'package:kdays_client/features/root/view/root_page.dart';
 import 'package:kdays_client/features/settings/view/settings_page.dart';
 import 'package:kdays_client/routes/screen_paths.dart';
 
@@ -14,34 +13,17 @@ final router = GoRouter(
   navigatorKey: _rootRouteKey,
   initialLocation: ScreenPaths.login,
   routes: [
-    StatefulShellRoute.indexedStack(
-      builder: (context, router, navigator) => RootPage(navigator),
-      branches: [
-        StatefulShellBranch(
-          routes: [
-            AppRoute(
-              path: ScreenPaths.home,
-              builder: (_) => const HomePage(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            AppRoute(
-              path: ScreenPaths.my,
-              builder: (_) => const MyPage(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            AppRoute(
-              path: ScreenPaths.settings,
-              builder: (_) => const SettingsPage(),
-            ),
-          ],
-        ),
-      ],
+    AppRoute(
+      path: ScreenPaths.home,
+      builder: (_) => const HomePage(),
+    ),
+    AppRoute(
+      path: ScreenPaths.my,
+      builder: (_) => const MyPage(),
+    ),
+    AppRoute(
+      path: ScreenPaths.settings,
+      builder: (_) => const SettingsPage(),
     ),
     AppRoute(
       path: ScreenPaths.login,
