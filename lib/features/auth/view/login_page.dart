@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdays_client/constants/layout.dart';
@@ -105,21 +106,15 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) async {
-        state.when(
-          initial: () {
-            talker.debug('LoginPage check login');
-          },
-          processingUserCenter: (String input, String password) {
-            talker.debug('LoginPage update AuthBloc state to $state');
-          },
-          processingForum: (String input, String userCenterAccessToken) {
-            talker.debug('LoginPage update AuthBloc state to $state');
-          },
-          failed: (e) {
-            talker.handle(e);
+        switch (state) {
+          case Failed(:final e):
+            talker.handle(state);
             showSnackBar(context, e.message!);
-          },
-          authed: (input, userCenterToken, forumToken) {
+          case Authed(
+              :final input,
+              :final userCenterToken,
+              :final forumToken,
+            ):
             // 更新全局凭据
             context.read<NetClientProvider>().setUserCenterToken(forumToken);
             context.read<NetClientProvider>().setForumToken(forumToken);
@@ -137,20 +132,20 @@ class _LoginPageState extends State<LoginPage> {
                 .add(SettingsEvent.setCurrentUser(input: input));
             showSnackBar(context, '登录成功');
             context.pushReplacementNamed(ScreenPaths.home);
-          },
-          notAuthed: () {
+            SchedulerBinding.instance.addPersistentFrameCallback((_) {});
+          default:
             talker.debug('LoginPage update AuthBloc state to $state');
-          },
-        );
+        }
       },
       builder: (context, state) {
-        if (state.isAuthed) {
-          context.pushReplacementNamed(ScreenPaths.settings);
-        }
+        final content = switch (state) {
+          NotAuthed() || Failed() => _buildForm(context),
+          _ => const Center(child: CircularProgressIndicator()),
+        };
         return Scaffold(
           body: Padding(
             padding: edgeInsetsL10T10R10B10,
-            child: _buildForm(context),
+            child: content,
           ),
         );
       },

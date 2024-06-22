@@ -4,6 +4,7 @@ import 'package:kdays_client/features/auth/view/login_page.dart';
 import 'package:kdays_client/features/home/view/home_page.dart';
 import 'package:kdays_client/features/my/view/my_page.dart';
 import 'package:kdays_client/features/root/view/root_page.dart';
+import 'package:kdays_client/features/settings/view/settings_page.dart';
 import 'package:kdays_client/routes/screen_paths.dart';
 
 final _rootRouteKey = GlobalKey<NavigatorState>();
@@ -29,6 +30,14 @@ final router = GoRouter(
             AppRoute(
               path: ScreenPaths.my,
               builder: (_) => const MyPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            AppRoute(
+              path: ScreenPaths.settings,
+              builder: (_) => const SettingsPage(),
             ),
           ],
         ),

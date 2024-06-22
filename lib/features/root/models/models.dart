@@ -22,4 +22,11 @@ const barItems = [
     screenPath: ScreenPaths.my,
     tab: RootTab.my,
   ),
+  NavigationBarItem(
+    icon: Icon(Icons.settings_outlined),
+    selectedIcon: Icon(Icons.settings),
+    label: '设置',
+    screenPath: ScreenPaths.settings,
+    tab: RootTab.settings,
+  ),
 ];

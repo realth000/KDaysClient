@@ -98,12 +98,18 @@ class App extends StatelessWidget {
           create: (context) => InitBloc(RepositoryProvider.of(context))
             ..add(const InitEvent.loadData()),
           child: BlocBuilder<InitBloc, InitState>(
-            builder: (context, state) => state.when(
-              initial: SizedBox.new,
-              loadingData: CircularProgressIndicator.new,
-              success: (settingsMap, userCredential) =>
-                  _buildBody(context, settingsMap, userCredential),
-            ),
+            builder: (context, state) => switch (state) {
+              Initial() || LoadingData() => MaterialApp(
+                  title: 'KDays客户端',
+                  theme: AppTheme.makeLight(context),
+                  darkTheme: AppTheme.makeDark(context),
+                  home: const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+              Success(:final settingsMap, :final userCredential) =>
+                _buildBody(context, settingsMap, userCredential),
+            },
           ),
         ),
       ),

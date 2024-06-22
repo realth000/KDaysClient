@@ -7,6 +7,9 @@ enum RootTab {
 
   /// 我的
   my,
+
+  /// 设置
+  settings,
 }
 
 /// Root状态，只包含应用底部tab是哪个tab
