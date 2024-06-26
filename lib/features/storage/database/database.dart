@@ -9,6 +9,7 @@ part 'database.g.dart';
   tables: [
     User,
     Settings,
+    ImageCache,
   ],
 )
 final class AppDatabase extends _$AppDatabase {

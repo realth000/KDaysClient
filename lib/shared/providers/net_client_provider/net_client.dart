@@ -155,6 +155,47 @@ final class NetClient {
     }
   }
 
+  /// 普通网络请求
+  ///
+  /// 发送至除论坛和用户中心以外的站点
+  Future<Either<NetworkException, Response<dynamic>>> get(String url) async {
+    try {
+      final resp = await _dio.get<dynamic>(url);
+      if (resp.statusCode != HttpStatus.ok) {
+        return Left(NetworkException(code: resp.statusCode, message: null));
+      }
+      return Right(resp);
+    } on DioException catch (e, st) {
+      talker.handle(e, st);
+      return Left(NetworkException(code: null, message: e.message));
+    }
+  }
+
+  /// 获取图片
+  Future<Either<NetworkException, Response<dynamic>>> getImage(
+    String url,
+  ) async {
+    try {
+      final resp = await _dio.get<dynamic>(
+        url,
+        options: Options(
+          responseType: ResponseType.bytes,
+          headers: {
+            HttpHeaders.acceptHeader: 'image/avif,image/webp,*/*;q=0.8',
+            HttpHeaders.acceptEncodingHeader: 'gzip, deflate, br',
+          },
+        ),
+      );
+      if (resp.statusCode != HttpStatus.ok) {
+        return Left(NetworkException(code: resp.statusCode, message: null));
+      }
+      return Right(resp);
+    } on DioException catch (e, st) {
+      talker.handle(e, st);
+      return Left(NetworkException(code: null, message: e.message));
+    }
+  }
+
   String _signApi({
     required String secret,
     required String data,
