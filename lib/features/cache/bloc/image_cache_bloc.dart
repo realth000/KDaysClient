@@ -32,6 +32,7 @@ class ImageCacheBloc extends Bloc<ImageCacheEvent, ImageCacheState> {
     });
   }
 
+  // ignore: unused_field
   final ImageCacheRepository _repo;
 
   Future<void> _onLoadRequested(_Emit emit) async {
