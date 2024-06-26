@@ -57,4 +57,8 @@ sealed class AuthState with _$AuthState {
 
   /// 是否认证通过
   bool get isAuthed => this is Authed;
+
+  /// 是否正在进行认证动作，认证用户中心或论坛
+  bool get isProcessing =>
+      this is ProcessingUserCenter || this is ProcessingForum;
 }

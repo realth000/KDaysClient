@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdays_client/constants/layout.dart';
 import 'package:kdays_client/features/auth/bloc/auth_bloc.dart';
+import 'package:kdays_client/features/auth/exception/exception.dart';
 import 'package:kdays_client/features/settings/bloc/settings_bloc.dart';
 import 'package:kdays_client/features/storage/bloc/storage_bloc.dart';
 import 'package:kdays_client/instance.dart';
+import 'package:kdays_client/routes/route_params.dart';
 import 'package:kdays_client/routes/screen_paths.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/net_client_provider.dart';
 import 'package:kdays_client/utils/show_snack_bar.dart';
@@ -105,11 +107,25 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
+      // 如果当前页面不是顶层页面，也就是上面还盖着别的页面，啥也别干
+      listenWhen: (prev, curr) => !context.canPop(),
       listener: (context, state) async {
         switch (state) {
           case Failed(:final e):
             talker.handle(state);
-            showSnackBar(context, e.message!);
+            if (e case AppNotAuthed(:final authUrl)) {
+              // 应用未获得用户授权，跳转到等待用户授权页面
+              await context.pushNamed(
+                ScreenPaths.loginWaitAuth,
+                pathParameters: {
+                  RouteParams.input: inputController.text,
+                  RouteParams.password: passwordController.text,
+                  RouteParams.authUrl: authUrl,
+                },
+              );
+            } else {
+              showSnackBar(context, e.message!);
+            }
           case Authed(
               :final input,
               :final userCenterToken,

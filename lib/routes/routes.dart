@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kdays_client/features/auth/view/login_page.dart';
+import 'package:kdays_client/features/auth/view/wait_auth_page.dart';
 import 'package:kdays_client/features/home/view/home_page.dart';
 import 'package:kdays_client/features/my/view/my_page.dart';
 import 'package:kdays_client/features/settings/view/settings_page.dart';
+import 'package:kdays_client/routes/route_params.dart';
 import 'package:kdays_client/routes/screen_paths.dart';
 
 final _rootRouteKey = GlobalKey<NavigatorState>();
@@ -28,6 +30,21 @@ final router = GoRouter(
     AppRoute(
       path: ScreenPaths.login,
       builder: (_) => const LoginPage(),
+      routes: [
+        AppRoute(
+          path: ScreenPaths.loginWaitAuth,
+          builder: (state) {
+            final username = state.pathParameters[RouteParams.input]!;
+            final password = state.pathParameters[RouteParams.password]!;
+            final authUrl = state.pathParameters[RouteParams.authUrl]!;
+            return WaitAuthPage(
+              username: username,
+              password: password,
+              authUrl: authUrl,
+            );
+          },
+        ),
+      ],
     ),
   ],
 );

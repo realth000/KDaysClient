@@ -11,3 +11,6 @@ const sizedBoxH60W60 = SizedBox(width: 60, height: 60);
 
 /// [EdgeInsets] 四周均为10
 const edgeInsetsL10T10R10B10 = EdgeInsets.all(10);
+
+/// [EdgeInsets] 四周均为20
+const edgeInsetsL20T20R20B20 = EdgeInsets.all(20);

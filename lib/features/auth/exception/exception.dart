@@ -10,7 +10,10 @@ sealed class AuthException with _$AuthException {
   /// 应用未授权
   ///
   /// 指用户尚未给本应用授予登录权限
-  const factory AuthException.appNotAuthed() = _AppNotAuthed;
+  const factory AuthException.appNotAuthed({
+    /// 用户给app授权的页面地址，临时生成
+    required String authUrl,
+  }) = AppNotAuthed;
 
   /// 头像未设置
   ///
@@ -25,6 +28,12 @@ sealed class AuthException with _$AuthException {
   /// 用户不存在或密码错误
   const factory AuthException.accountOrPasswordError() = _AccoutOrPasswordError;
 
+  /// 没有登录过的用户
+  const factory AuthException.noCredential() = _NoCredential;
+
+  /// 凭据对不上，需要重新登录
+  const factory AuthException.tokenMismatch() = _TokenMismatch;
+
   /// 网络错误
   const factory AuthException.networkError({
     required int? code,
@@ -38,7 +47,7 @@ sealed class AuthException with _$AuthException {
   ///
   /// 其他类型的错误
   const factory AuthException.unknown({
-    required int code,
+    required int? code,
     required String? message,
   }) = _Unknown;
 
@@ -46,12 +55,14 @@ sealed class AuthException with _$AuthException {
   ///
   /// 这里实际上不会返回null，但是不可空的话freezed生成的代码编译不过
   String? get message => switch (this) {
-        _AppNotAuthed() => '应用未授权',
+        AppNotAuthed() => '应用未授权',
         _AvatarNotSet() => '用户未设置头像',
         _AccountNotCreated() => '用户不存在',
         _AccoutOrPasswordError() => '用户不存在或密码错误',
         _NetworkError(:final code) => '网络错误（$code）',
         _TokenNotFound() => '响应中未找到用户凭据',
+        _TokenMismatch() => '认证出错，需要重新登录',
+        _NoCredential() => '没有登录过的用户',
         _Unknown(:final message) => '其他错误($message)',
       };
 }

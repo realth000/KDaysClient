@@ -16,6 +16,12 @@ abstract class _AuthCode {
   static const accountNotCreated = -2;
   static const accountOrPasswordError = -4;
   static const appNotAuthed = -7;
+  static const tokenMismatch = -9400;
+}
+
+/// 服务器返回的响应中，data部分作为字典时可能有的key
+abstract class _AuthDataKeys {
+  static const authorizeUrl = 'authorize_url';
 }
 
 abstract class _AuthKeys {
@@ -27,6 +33,14 @@ abstract class _AuthKeys {
   static const token = 'token';
 }
 
+bool _isAppNotAuthedData(dynamic data) =>
+    (data is Map<String, dynamic>) &&
+    data.containsKey(_AuthDataKeys.authorizeUrl) &&
+    data[_AuthDataKeys.authorizeUrl] is String;
+
+String _appAuthUrl(dynamic data) =>
+    (data as Map<String, dynamic>)[_AuthDataKeys.authorizeUrl] as String;
+
 extension _ServerRespToExceptionExt on ServerResp {
   /// 将[ServerResp]转化成[AuthException]
   ///
@@ -35,7 +49,9 @@ extension _ServerRespToExceptionExt on ServerResp {
         _AuthCode.accountNotCreated => const AuthException.accountNotCreated(),
         _AuthCode.accountOrPasswordError =>
           const AuthException.accountOrPasswordError(),
-        _AuthCode.appNotAuthed => const AuthException.appNotAuthed(),
+        _AuthCode.appNotAuthed when _isAppNotAuthedData(data) =>
+          AuthException.appNotAuthed(authUrl: _appAuthUrl(data)),
+        _AuthCode.tokenMismatch => const AuthException.tokenMismatch(),
         final v => AuthException.unknown(code: v, message: message),
       };
 }
@@ -142,17 +158,24 @@ final class AuthRepository {
   }
 
   /// 获取当前用户信息
-  Future<UserModel?> fetchUserInfo() async {
+  Future<Either<AuthException, UserModel>> fetchUserInfo() async {
     final userInfoResult =
         await _netClientProvider.getClient().getForum(ForumApi.myInfo);
     switch (userInfoResult) {
       case Left(value: final e):
         talker.handle(e);
-        return null;
+        return Left(
+          AuthException.networkError(code: e.code, message: e.message),
+        );
       case Right(value: final resp):
         final serverResp =
             ServerResp.fromJson(resp.data as Map<String, dynamic>);
-        return UserModel.fromJson(serverResp.data as Map<String, dynamic>);
+        if (!serverResp.ok) {
+          return Left(serverResp.toException());
+        }
+        return Right(
+          UserModel.fromJson(serverResp.data as Map<String, dynamic>),
+        );
     }
     // if (userInfoResult case Right(value: final resp)) {
     //   final userInfo = UserModel.fromJson(resp.data as Map<String, dynamic>);
@@ -162,17 +185,16 @@ final class AuthRepository {
   }
 
   /// 检查认证凭据是否有效
-  Future<UserCredential?> validateCredential() async {
+  Future<Either<AuthException, UserCredential>> validateCredential() async {
     if (_netClientProvider.userCredential == null) {
       talker.debug('AuthRepo: validateCredential not '
           'passed: credential is null');
-      return null;
+      return const Left(AuthException.noCredential());
     }
-    if (await fetchUserInfo() == null) {
-      talker.debug('AuthRepo: validateCredential not '
-          'passed: failed to fetch user info');
-      return null;
-    }
-    return _netClientProvider.userCredential;
+    final resp = await fetchUserInfo();
+    return switch (resp) {
+      Left(value: final e) => Left(e),
+      Right() => Right(_netClientProvider.userCredential!),
+    };
   }
 }

@@ -54,8 +54,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     switch (authResult) {
       case Left(value: final e):
-        // TODO: 处理未设置头像
-        // TODO: 处理应用未授权
         emit(AuthState.failed(e: e));
       case Right(value: final accessToken):
         // 用户中心认证通过，接下来认证论坛
@@ -93,18 +91,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onCheckLogin(_Emit emit) async {
     talker.debug('AuthBloc check login');
     final userCredential = await _repo.validateCredential();
-    if (userCredential == null) {
-      emit(const AuthState.notAuthed());
-      talker.debug('AuthBloc check login, result: not authed');
-    } else {
-      talker.debug('AuthBloc check login, result: authed');
-      emit(
-        AuthState.authed(
-          input: userCredential.input,
-          userCenterToken: userCredential.userCenterToken,
-          forumToken: userCredential.forumToken,
-        ),
-      );
+    switch (userCredential) {
+      case Left(value: final e):
+        talker.debug('AuthBloc check login result: not authed: $e');
+        emit(const AuthState.notAuthed());
+      case Right(value: final v):
+        talker.debug('AuthBloc check login, result: authed');
+        emit(
+          AuthState.authed(
+            input: v.input,
+            userCenterToken: v.userCenterToken,
+            forumToken: v.forumToken,
+          ),
+        );
     }
   }
 }

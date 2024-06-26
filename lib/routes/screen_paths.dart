@@ -1,3 +1,5 @@
+import 'package:kdays_client/routes/route_params.dart';
+
 /// 路由定义
 final class ScreenPaths {
   const ScreenPaths._();
@@ -16,4 +18,8 @@ final class ScreenPaths {
 
   /// 登录
   static const String login = '/login';
+
+  /// 登录过程中，等待用户在网页中给app授权
+  static const String loginWaitAuth = 'waitAuth/:${RouteParams.input}/'
+      ':${RouteParams.password}/:${RouteParams.authUrl}';
 }
