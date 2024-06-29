@@ -10,4 +10,7 @@ final class ForumApi {
 
   /// 当前用户资料 *GET*
   static const String myProfile = 'api/my/profile';
+
+  /// 分区板块列表
+  static const String forumList = 'api/forum/list';
 }

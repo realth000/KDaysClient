@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+/// 独立使用的按钮的尺寸约束
+///
+/// 用在比较空旷的控件中，防止太窄或太宽
+const dependentButtonConstraints = BoxConstraints(
+  minWidth: 150,
+  maxWidth: 250,
+);
+
 /// [SizedBox] 高为10宽为10
 const sizedBoxH10W10 = SizedBox(width: 10, height: 10);
 

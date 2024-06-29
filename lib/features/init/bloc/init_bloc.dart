@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:kdays_client/features/storage/repository/storage_repository.dart';
 import 'package:kdays_client/shared/models/settings/settings_map.dart';
@@ -40,12 +39,9 @@ final class InitBloc extends Bloc<InitEvent, InitState> with LoggerMixin {
     UserCredential? userCredential;
 
     final input = settingsMap.currentUser.value;
-    debug('onLoadData load user credential for user $input');
-    if (kDebugMode) {
-      debug('loaded userCredential:');
-    }
     if (input != null) {
       userCredential = await _storageRepo.loadUserCredential(input);
+      onlyDebug('load user token: $userCredential');
     }
     emit(
       InitState.success(
