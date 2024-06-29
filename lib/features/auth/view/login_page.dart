@@ -7,10 +7,10 @@ import 'package:kdays_client/features/auth/bloc/auth_bloc.dart';
 import 'package:kdays_client/features/auth/exception/exception.dart';
 import 'package:kdays_client/features/settings/bloc/settings_bloc.dart';
 import 'package:kdays_client/features/storage/bloc/storage_bloc.dart';
-import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/routes/route_params.dart';
 import 'package:kdays_client/routes/screen_paths.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/net_client_provider.dart';
+import 'package:kdays_client/utils/logger.dart';
 import 'package:kdays_client/utils/show_snack_bar.dart';
 
 /// 登录页面
@@ -22,7 +22,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with LoggerMixin {
   /// 表格的key
   final formKey = GlobalKey<FormState>();
 
@@ -112,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
       listener: (context, state) async {
         switch (state) {
           case Failed(:final e):
-            talker.handle(state);
+            handle(state);
             if (e case AppNotAuthed(:final authUrl)) {
               // 应用未获得用户授权，跳转到等待用户授权页面
               await context.pushNamed(
@@ -150,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
             context.pushReplacementNamed(ScreenPaths.home);
             SchedulerBinding.instance.addPersistentFrameCallback((_) {});
           default:
-            talker.debug('LoginPage update AuthBloc state to $state');
+            debug('LoginPage update AuthBloc state to $state');
         }
       },
       builder: (context, state) {

@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/shared/models/app_credential.dart';
 import 'package:kdays_client/shared/models/user_credential.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/exception.dart';
+import 'package:kdays_client/utils/logger.dart';
 
 extension _DateTimeExt on DateTime {
   int get secondsSinceEpoch => (millisecondsSinceEpoch / 1000).round();
@@ -33,7 +33,7 @@ final class _HeaderKeys {
 /// 网络请求的client，封装了一层dio，负责附加各类参数及处理问题
 ///
 /// 为保证使用的凭据是最新的，每个网络请求都应单独构建一个最新的[NetClient]
-final class NetClient {
+final class NetClient with LoggerMixin {
   /// Constructor.
   const NetClient({
     required Dio dio,
@@ -84,7 +84,7 @@ final class NetClient {
       }
       return Right(resp);
     } on DioException catch (e, st) {
-      talker.handle(e, st);
+      handle(e, st);
       return Left(NetworkException(code: null, message: e.message));
     }
   }
@@ -116,7 +116,7 @@ final class NetClient {
       }
       return Right(resp);
     } on DioException catch (e, st) {
-      talker.handle(e, st);
+      handle(e, st);
       return Left(NetworkException(code: null, message: e.message));
     }
   }
@@ -150,7 +150,7 @@ final class NetClient {
       }
       return Right(resp);
     } on DioException catch (e, st) {
-      talker.handle(e, st);
+      handle(e, st);
       return Left(NetworkException(code: null, message: e.message));
     }
   }
@@ -166,7 +166,7 @@ final class NetClient {
       }
       return Right(resp);
     } on DioException catch (e, st) {
-      talker.handle(e, st);
+      handle(e, st);
       return Left(NetworkException(code: null, message: e.message));
     }
   }
@@ -191,7 +191,7 @@ final class NetClient {
       }
       return Right(resp);
     } on DioException catch (e, st) {
-      talker.handle(e, st);
+      handle(e, st);
       return Left(NetworkException(code: null, message: e.message));
     }
   }

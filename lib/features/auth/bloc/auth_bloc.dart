@@ -3,7 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:kdays_client/features/auth/exception/exception.dart';
 import 'package:kdays_client/features/auth/repository/auth_repository.dart';
-import 'package:kdays_client/instance.dart';
+import 'package:kdays_client/utils/logger.dart';
 
 part 'auth_bloc.freezed.dart';
 part 'auth_event.dart';
@@ -12,7 +12,7 @@ part 'auth_state.dart';
 typedef _Emit = Emitter<AuthState>;
 
 /// 认证的bloc，认证相关的逻辑都在这里
-class AuthBloc extends Bloc<AuthEvent, AuthState> {
+class AuthBloc extends Bloc<AuthEvent, AuthState> with LoggerMixin {
   /// Constructor.
   AuthBloc(this._repo) : super(const AuthState.initial()) {
     on<AuthEvent>((event, emit) async {
@@ -89,14 +89,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onCheckLogin(_Emit emit) async {
-    talker.debug('AuthBloc check login');
+    debug('AuthBloc check login');
     final userCredential = await _repo.validateCredential();
     switch (userCredential) {
       case Left(value: final e):
-        talker.debug('AuthBloc check login result: not authed: $e');
+        debug('AuthBloc check login result: not authed: $e');
         emit(const AuthState.notAuthed());
       case Right(value: final v):
-        talker.debug('AuthBloc check login, result: authed');
+        debug('AuthBloc check login, result: authed');
         emit(
           AuthState.authed(
             input: v.input,

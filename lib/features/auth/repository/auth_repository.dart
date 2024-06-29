@@ -6,11 +6,11 @@ import 'package:kdays_client/constants/api/user_center.dart';
 import 'package:kdays_client/constants/env.dart';
 import 'package:kdays_client/features/auth/exception/exception.dart';
 import 'package:kdays_client/features/auth/models/models.dart';
-import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/shared/models/server_resp.dart';
 import 'package:kdays_client/shared/models/user.dart';
 import 'package:kdays_client/shared/models/user_credential.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/net_client_provider.dart';
+import 'package:kdays_client/utils/logger.dart';
 
 abstract class _AuthCode {
   static const accountNotCreated = -2;
@@ -33,10 +33,10 @@ abstract class _AuthKeys {
   static const token = 'token';
 }
 
-bool _isAppNotAuthedData(dynamic data) =>
-    (data is Map<String, dynamic>) &&
-    data.containsKey(_AuthDataKeys.authorizeUrl) &&
-    data[_AuthDataKeys.authorizeUrl] is String;
+bool _isAppNotAuthedData(dynamic data) => switch (data) {
+      (<String, dynamic>{_AuthDataKeys.authorizeUrl: String()}) => true,
+      _ => false,
+    };
 
 String _appAuthUrl(dynamic data) =>
     (data as Map<String, dynamic>)[_AuthDataKeys.authorizeUrl] as String;
@@ -59,7 +59,7 @@ extension _ServerRespToExceptionExt on ServerResp {
 /// 用于认证的repository
 ///
 /// 提供用户认证相关的能力
-final class AuthRepository {
+final class AuthRepository with LoggerMixin {
   /// 登录
   AuthRepository(this._netClientProvider);
 
@@ -96,7 +96,7 @@ final class AuthRepository {
         );
       case Right(value: final v):
         final resp = ServerResp.fromJson(v.data as Map<String, dynamic>);
-        talker.debug('loginUserCenter got resp: $resp');
+        debug('loginUserCenter got resp: $resp');
         if (!resp.ok) {
           return Left(resp.toException());
         }
@@ -104,7 +104,7 @@ final class AuthRepository {
         final userUserCenterToken =
             (resp.data as Map<String, dynamic>?)?['access_token'] as String?;
         if (userUserCenterToken == null) {
-          talker.error('user center token not found in response');
+          error('user center token not found in response');
           return const Left(AuthException.tokenNotFound());
         }
         _netClientProvider.setUserCenterToken(userUserCenterToken);
@@ -142,7 +142,7 @@ final class AuthRepository {
         );
       case Right(value: final v):
         final resp = ServerResp.fromJson(v.data as Map<String, dynamic>);
-        talker.debug('loginForum got resp: $resp');
+        debug('loginForum got resp: $resp');
         if (!resp.ok) {
           return Left(resp.toException());
         }
@@ -163,7 +163,7 @@ final class AuthRepository {
         await _netClientProvider.getClient().getForum(ForumApi.myInfo);
     switch (userInfoResult) {
       case Left(value: final e):
-        talker.handle(e);
+        handle(e);
         return Left(
           AuthException.networkError(code: e.code, message: e.message),
         );
@@ -187,7 +187,7 @@ final class AuthRepository {
   /// 检查认证凭据是否有效
   Future<Either<AuthException, UserCredential>> validateCredential() async {
     if (_netClientProvider.userCredential == null) {
-      talker.debug('AuthRepo: validateCredential not '
+      debug('AuthRepo: validateCredential not '
           'passed: credential is null');
       return const Left(AuthException.noCredential());
     }

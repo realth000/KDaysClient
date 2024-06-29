@@ -2,10 +2,10 @@ import 'package:drift/drift.dart';
 import 'package:kdays_client/constants/settings.dart';
 import 'package:kdays_client/features/storage/database/dao/dao.dart';
 import 'package:kdays_client/features/storage/database/database.dart';
-import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/shared/models/settings/settings_item.dart';
 import 'package:kdays_client/shared/models/settings/settings_map.dart';
 import 'package:kdays_client/shared/models/user_credential.dart';
+import 'package:kdays_client/utils/logger.dart';
 
 extension _UserEntityExt on UserEntity {
   UserCredential toCredential() => UserCredential(
@@ -17,7 +17,7 @@ extension _UserEntityExt on UserEntity {
 }
 
 /// 存储 repository
-final class StorageRepository {
+final class StorageRepository with LoggerMixin {
   /// Constructor.
   const StorageRepository(this._db);
 
@@ -31,7 +31,7 @@ final class StorageRepository {
     required String forumToken,
   }) async {
     return _db.transaction(() async {
-      talker.debug('saveUserCredential for user $input');
+      debug('saveUserCredential for user $input');
       final id = await UserDao(_db).insertUser(
         UserCompanion(
           input: Value(input),
@@ -40,7 +40,7 @@ final class StorageRepository {
           forumToken: Value(forumToken),
         ),
       );
-      talker.debug('saveUserCredential saved id=$id for user $input');
+      debug('saveUserCredential saved id=$id for user $input');
     });
   }
 
@@ -66,7 +66,7 @@ final class StorageRepository {
   /// 保存类型为[T]的设置项
   Future<void> saveSettings<T>(String key, T value) async {
     await _db.transaction(() async {
-      talker.debug('saveSettings: key=$key, value=$value, type=$T');
+      debug('saveSettings: key=$key, value=$value, type=$T');
       await SettingsDao(_db).setValue<T>(key, value);
     });
   }
@@ -87,7 +87,7 @@ final class StorageRepository {
           themeMode =
               SettingsDefaultValues.themeMode.applyFromValue(settings.intValue);
         default:
-          talker.warning('loadAllSettings: unrecognized settings '
+          warning('loadAllSettings: unrecognized settings '
               'key ${settings.name}');
       }
     }

@@ -8,17 +8,17 @@ import 'package:kdays_client/features/settings/bloc/settings_bloc.dart';
 import 'package:kdays_client/features/storage/bloc/storage_bloc.dart';
 import 'package:kdays_client/features/storage/database/database.dart';
 import 'package:kdays_client/features/storage/repository/storage_repository.dart';
-import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/routes/routes.dart';
 import 'package:kdays_client/shared/models/app_credential.dart';
 import 'package:kdays_client/shared/models/settings/settings_map.dart';
 import 'package:kdays_client/shared/models/user_credential.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/net_client_provider.dart';
 import 'package:kdays_client/theme/theme.dart';
+import 'package:kdays_client/utils/logger.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 /// 顶层应用
-class App extends StatelessWidget {
+class App extends StatelessWidget with LoggerMixin {
   /// Constructor.
   const App({super.key});
 
@@ -27,7 +27,7 @@ class App extends StatelessWidget {
     SettingsMap settingsMap,
     UserCredential? userCredential,
   ) {
-    talker.debug('app: preload user credential: ${userCredential != null}');
+    debug('app: preload user credential: ${userCredential != null}');
     final app = MaterialApp.router(
       title: 'KDays客户端',
       theme: AppTheme.makeLight(context),

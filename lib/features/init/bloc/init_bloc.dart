@@ -1,9 +1,10 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:kdays_client/features/storage/repository/storage_repository.dart';
-import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/shared/models/settings/settings_map.dart';
 import 'package:kdays_client/shared/models/user_credential.dart';
+import 'package:kdays_client/utils/logger.dart';
 
 part 'init_bloc.freezed.dart';
 part 'init_event.dart';
@@ -16,7 +17,7 @@ typedef _Emit = Emitter<InitState>;
 /// 包括初始数据的加载，以及一些一次性的事件处理
 ///
 /// 理论上该bloc只会在应用启动时触发，后续运行过程中不会触发
-final class InitBloc extends Bloc<InitEvent, InitState> {
+final class InitBloc extends Bloc<InitEvent, InitState> with LoggerMixin {
   /// Constructor.
   InitBloc(this._storageRepo) : super(const InitState.initial()) {
     on<InitEvent>((event, emit) async {
@@ -39,7 +40,10 @@ final class InitBloc extends Bloc<InitEvent, InitState> {
     UserCredential? userCredential;
 
     final input = settingsMap.currentUser.value;
-    talker.debug('InitBloc: onLoadData load user credential for user $input');
+    debug('InitBloc: onLoadData load user credential for user $input');
+    if (kDebugMode) {
+      debug('InitBloc: loaded userCredential:');
+    }
     if (input != null) {
       userCredential = await _storageRepo.loadUserCredential(input);
     }

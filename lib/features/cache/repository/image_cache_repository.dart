@@ -2,9 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fpdart/fpdart.dart';
-import 'package:kdays_client/instance.dart';
 import 'package:kdays_client/shared/models/cache/image_cache_response.dart';
 import 'package:kdays_client/shared/providers/net_client_provider/net_client_provider.dart';
+import 'package:kdays_client/utils/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
@@ -28,7 +28,7 @@ Future<void> initImageCache() async {
 }
 
 /// 图片缓存repo
-final class ImageCacheRepository {
+final class ImageCacheRepository with LoggerMixin {
   /// Constructor.
   ImageCacheRepository(this._netClientProvider);
 
@@ -75,7 +75,7 @@ final class ImageCacheRepository {
     _loadingImages.remove(url);
     switch (resp) {
       case Left(value: final e):
-        talker.error('ImageCacheRepo: failed to update image cache: $e');
+        error('ImageCacheRepo: failed to update image cache: $e');
         _controller.add(ImageCacheResponse.failure(imageId: url));
       case Right(value: final v):
         final data = v.data as List<int>;

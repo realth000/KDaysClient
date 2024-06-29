@@ -3,7 +3,7 @@ part of 'dao.dart';
 /// [Settings]表 dao
 @DriftAccessor(tables: [Settings])
 final class SettingsDao extends DatabaseAccessor<AppDatabase>
-    with _$SettingsDaoMixin {
+    with _$SettingsDaoMixin, LoggerMixin {
   /// Constructor.
   SettingsDao(super.db);
 
@@ -55,7 +55,7 @@ final class SettingsDao extends DatabaseAccessor<AppDatabase>
       );
     } else {
       // 不支持的类型
-      talker.error('SettingsDao intend to save unsupported setting type: '
+      error('SettingsDao intend to save unsupported setting type: '
           'key=$key, value=$value, type=$T');
       return;
     }
