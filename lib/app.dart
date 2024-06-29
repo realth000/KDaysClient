@@ -27,7 +27,7 @@ class App extends StatelessWidget with LoggerMixin {
     SettingsMap settingsMap,
     UserCredential? userCredential,
   ) {
-    debug('app: preload user credential: ${userCredential != null}');
+    debug('preload user credential: ${userCredential != null}');
     final app = MaterialApp.router(
       title: 'KDays客户端',
       theme: AppTheme.makeLight(context),

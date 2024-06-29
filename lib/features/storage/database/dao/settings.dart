@@ -55,7 +55,7 @@ final class SettingsDao extends DatabaseAccessor<AppDatabase>
       );
     } else {
       // 不支持的类型
-      error('SettingsDao intend to save unsupported setting type: '
+      error('intend to save unsupported setting type: '
           'key=$key, value=$value, type=$T');
       return;
     }

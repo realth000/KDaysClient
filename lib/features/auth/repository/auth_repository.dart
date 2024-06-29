@@ -187,8 +187,7 @@ final class AuthRepository with LoggerMixin {
   /// 检查认证凭据是否有效
   Future<Either<AuthException, UserCredential>> validateCredential() async {
     if (_netClientProvider.userCredential == null) {
-      debug('AuthRepo: validateCredential not '
-          'passed: credential is null');
+      debug('validateCredential not passed: credential is null');
       return const Left(AuthException.noCredential());
     }
     final resp = await fetchUserInfo();

@@ -75,7 +75,7 @@ final class ImageCacheRepository with LoggerMixin {
     _loadingImages.remove(url);
     switch (resp) {
       case Left(value: final e):
-        error('ImageCacheRepo: failed to update image cache: $e');
+        error('failed to update image cache: $e');
         _controller.add(ImageCacheResponse.failure(imageId: url));
       case Right(value: final v):
         final data = v.data as List<int>;

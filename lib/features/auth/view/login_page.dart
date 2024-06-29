@@ -150,7 +150,7 @@ class _LoginPageState extends State<LoginPage> with LoggerMixin {
             context.pushReplacementNamed(ScreenPaths.home);
             SchedulerBinding.instance.addPersistentFrameCallback((_) {});
           default:
-            debug('LoginPage update AuthBloc state to $state');
+            debug('update AuthBloc state to $state');
         }
       },
       builder: (context, state) {

@@ -89,14 +89,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> with LoggerMixin {
   }
 
   Future<void> _onCheckLogin(_Emit emit) async {
-    debug('AuthBloc check login');
+    debug('check login');
     final userCredential = await _repo.validateCredential();
     switch (userCredential) {
       case Left(value: final e):
-        debug('AuthBloc check login result: not authed: $e');
+        debug('check login result: not authed: $e');
         emit(const AuthState.notAuthed());
       case Right(value: final v):
-        debug('AuthBloc check login, result: authed');
+        debug('check login, result: authed');
         emit(
           AuthState.authed(
             input: v.input,

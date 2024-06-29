@@ -40,9 +40,9 @@ final class InitBloc extends Bloc<InitEvent, InitState> with LoggerMixin {
     UserCredential? userCredential;
 
     final input = settingsMap.currentUser.value;
-    debug('InitBloc: onLoadData load user credential for user $input');
+    debug('onLoadData load user credential for user $input');
     if (kDebugMode) {
-      debug('InitBloc: loaded userCredential:');
+      debug('loaded userCredential:');
     }
     if (input != null) {
       userCredential = await _storageRepo.loadUserCredential(input);
